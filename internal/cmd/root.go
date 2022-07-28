@@ -1,13 +1,14 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 
 	"go.uber.org/zap"
 )
 
 //initLogger function initializes the Logger engine using Zap as a base
-func InitLogger() *zap.Logger {
+func InitLogger(ctx context.Context) *zap.Logger {
 	rawJSON := []byte(`{
 	  "level": "debug",
 	  "encoding": "json",

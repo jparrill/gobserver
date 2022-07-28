@@ -1,16 +1,23 @@
 package main
 
 import (
-	"github.com/jparrill/gormsample/internal/cmd"
-	"go.uber.org/zap"
-)
+	"context"
+	"fmt"
 
-var logger *zap.Logger
+	"github.com/jparrill/gormsample/internal/cmd"
+)
 
 func main() {
 
-	// Recover the configuration
-	config = cmd.RecoverConfig()
+	// Initialize Context
+	ctx := context.Background()
+
 	// Initialize the logger
-	logger = cmd.InitLogger()
+	logger := cmd.InitLogger(ctx)
+	logger.Info("Loading Configuration")
+
+	// Recover the configuration
+	cfg := cmd.RecoverConfig(ctx)
+	fmt.Printf("%T, %v", cfg, cfg.DB.DBName)
+
 }
