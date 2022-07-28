@@ -1,10 +1,16 @@
 package main
 
-import "github.com/jparrill/gormsample/internal/cmd"
+import (
+	"github.com/jparrill/gormsample/internal/cmd"
+	"go.uber.org/zap"
+)
+
+var logger *zap.Logger
 
 func main() {
 
-	logger := cmd.InitLogger()
-	logger.Info("Logging Application from Main")
-
+	// Recover the configuration
+	config = cmd.RecoverConfig()
+	// Initialize the logger
+	logger = cmd.InitLogger()
 }

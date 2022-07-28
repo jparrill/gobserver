@@ -1,0 +1,9 @@
+tmpfolder: "/tmp/gosample/"
+db:
+  dbname: "sample.db"
+  dbtype: "sqlite"
+  dbuser: "root"
+  dbpass: "password"
+log:
+  logpath: "/tmp/gormsample/"
+  loglevel: "debug"
