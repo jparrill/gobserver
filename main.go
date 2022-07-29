@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jparrill/gormsample/internal/cmd"
+	"github.com/jparrill/gobserver/internal/cmd"
 )
 
 func main() {

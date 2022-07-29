@@ -1,4 +1,4 @@
-module github.com/jparrill/gormsample
+module github.com/jparrill/gobserver
 
 go 1.18
 

@@ -3,7 +3,7 @@ package database
 import (
 	"os"
 
-	"github.com/jparrill/gormsample/internal/model"
+	"github.com/jparrill/gobserver/internal/model"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -18,7 +18,7 @@ func (sq sqlite) Connect() *gorm.DB {
 	if err != nil {
 		main.logger.Println("Error recovering DB Filename")
 	}
-	db_path := "/tmp/gormsample/" + db_file
+	db_path := "/tmp/gobserver/" + db_file
 
 	return gorm.Open(sqlite.Open(db_file), &gorm.Config{})
 }

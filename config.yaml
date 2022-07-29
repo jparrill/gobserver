@@ -5,5 +5,5 @@ db:
   dbuser: "root"
   dbpass: "password"
 log:
-  logpath: "/tmp/gormsample/"
+  logpath: "/tmp/gobserver/"
   loglevel: "debug"
