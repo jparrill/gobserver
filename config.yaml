@@ -1,4 +1,3 @@
-tmpfolder: "/tmp/gosample/"
 db:
   dbname: "sample.db"
   dbtype: "sqlite"

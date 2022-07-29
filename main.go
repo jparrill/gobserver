@@ -7,17 +7,21 @@ import (
 	"github.com/jparrill/gobserver/internal/cmd"
 )
 
+var ctx context.Context
+var cfg cmd.Config
+
 func main() {
 
 	// Initialize Context
-	ctx := context.Background()
+	ctx = context.Background()
+
+	// Recover the configuration
+	cfg = cmd.RecoverConfig()
 
 	// Initialize the logger
 	logger := cmd.InitLogger(ctx)
 	logger.Info("Loading Configuration")
 
-	// Recover the configuration
-	cfg := cmd.RecoverConfig(ctx)
 	fmt.Printf("%T, %v", cfg, cfg.DB.DBName)
 
 }

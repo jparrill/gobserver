@@ -3,16 +3,30 @@ package cmd
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"os"
 
 	"go.uber.org/zap"
 )
 
-//initLogger function initializes the Logger engine using Zap as a base
+const (
+	basePath = "/tmp/gobserver"
+)
+
+//InitLogger function initializes the Logger engine using Zap as a base
 func InitLogger(ctx context.Context) *zap.Logger {
+	// TODO: This Function receives the Context, we need to store the logger inside
+	// in order to use it among the whole app
+	_, err := os.Stat(basePath)
+	if err != nil {
+		fmt.Println("BasePath for Log entries does not exists, creating...")
+		os.Mkdir(basePath, 0754)
+	}
+
 	rawJSON := []byte(`{
-	  "level": "debug",
+	  "level": "` + cfg.Log.LogLevel + `",
 	  "encoding": "json",
-	  "outputPaths": ["stdout", "/tmp/logs"],
+	  "outputPaths": ["stdout", "` + basePath + `/logs"],
 	  "errorOutputPaths": ["stderr"],
 	  "encoderConfig": {
 	    "messageKey": "message",
@@ -21,12 +35,12 @@ func InitLogger(ctx context.Context) *zap.Logger {
 	  }
 	}`)
 
-	var cfg zap.Config
+	var loggerConfig zap.Config
 
-	if err := json.Unmarshal(rawJSON, &cfg); err != nil {
+	if err := json.Unmarshal(rawJSON, &loggerConfig); err != nil {
 		panic(err)
 	}
-	logger, err := cfg.Build()
+	logger, err := loggerConfig.Build()
 	if err != nil {
 		panic(err)
 	}
