@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jparrill/gobserver/internal/cmd"
+	"github.com/jparrill/gobserver/internal/database"
 )
 
 var ctx context.Context
@@ -17,7 +18,9 @@ func main() {
 	cmd.RecoverConfig()
 
 	// Initialize the logger
-	logger := cmd.InitLogger()
-	logger.Info("Loading Configuration")
+	cmd.InitLogger()
+	cmd.MainLogger.Info("Initializing DDBB")
+
+	database.Identify(cmd.CFG.DB.DBType)
 
 }

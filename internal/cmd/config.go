@@ -16,6 +16,7 @@ type TOMLCfgFile Config
 
 // Config struct holds the fields for global config
 type Config struct {
+	TMPFolder string `yaml:"tmpfolder" json:"tmpfolder"`
 	// DB realted config
 	DB struct {
 		// DBName is a Filename in sqlite or DDBB Name in case of Mysql or Postgres

@@ -8,24 +8,22 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	basePath = "/tmp/gobserver"
-)
+var MainLogger *zap.Logger
 
 //InitLogger function initializes the Logger engine using Zap as a base
-func InitLogger() *zap.Logger {
+func InitLogger() {
 	// TODO: This Function receives the Context, we need to store the logger inside
 	// in order to use it among the whole app
-	_, err := os.Stat(basePath)
+	_, err := os.Stat(CFG.TMPFolder)
 	if err != nil {
 		fmt.Println("BasePath for Log entries does not exists, creating...")
-		os.Mkdir(basePath, 0754)
+		os.Mkdir(CFG.TMPFolder, 0754)
 	}
 
 	rawJSON := []byte(`{
 	  "level": "` + CFG.Log.LogLevel + `",
 	  "encoding": "json",
-	  "outputPaths": ["stdout", "` + basePath + `/logs"],
+	  "outputPaths": ["stdout", "` + CFG.Log.LogPath + `"],
 	  "errorOutputPaths": ["stderr"],
 	  "encoderConfig": {
 	    "messageKey": "message",
@@ -39,13 +37,11 @@ func InitLogger() *zap.Logger {
 	if err := json.Unmarshal(rawJSON, &loggerConfig); err != nil {
 		panic(err)
 	}
-	logger, err := loggerConfig.Build()
+	MainLogger, err = loggerConfig.Build()
 	if err != nil {
 		panic(err)
 	}
-	defer logger.Sync()
+	defer MainLogger.Sync()
 
-	logger.Info("Logger construction succeeded")
-
-	return logger
+	MainLogger.Info("Logger construction succeeded")
 }
