@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -14,7 +13,7 @@ const (
 )
 
 //InitLogger function initializes the Logger engine using Zap as a base
-func InitLogger(ctx context.Context) *zap.Logger {
+func InitLogger() *zap.Logger {
 	// TODO: This Function receives the Context, we need to store the logger inside
 	// in order to use it among the whole app
 	_, err := os.Stat(basePath)
@@ -24,7 +23,7 @@ func InitLogger(ctx context.Context) *zap.Logger {
 	}
 
 	rawJSON := []byte(`{
-	  "level": "` + cfg.Log.LogLevel + `",
+	  "level": "` + CFG.Log.LogLevel + `",
 	  "encoding": "json",
 	  "outputPaths": ["stdout", "` + basePath + `/logs"],
 	  "errorOutputPaths": ["stderr"],

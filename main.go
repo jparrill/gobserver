@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jparrill/gobserver/internal/cmd"
 )
 
 var ctx context.Context
-var cfg cmd.Config
 
 func main() {
 
@@ -16,12 +14,10 @@ func main() {
 	ctx = context.Background()
 
 	// Recover the configuration
-	cfg = cmd.RecoverConfig()
+	cmd.RecoverConfig()
 
 	// Initialize the logger
-	logger := cmd.InitLogger(ctx)
+	logger := cmd.InitLogger()
 	logger.Info("Loading Configuration")
-
-	fmt.Printf("%T, %v", cfg, cfg.DB.DBName)
 
 }

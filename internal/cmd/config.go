@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var cfg Config
+var CFG Config
 
 type JSONCfgFile Config
 type YAMLCfgFile Config
@@ -42,6 +42,8 @@ type Manage interface {
 	Recover() error
 }
 
+// Recover function using the YAMLCfgFile as a driver, parses the YAML file loaded and
+// injects the content into a Config struct and exposes it in CFG global var
 func (cfg *YAMLCfgFile) Recover() error {
 	cf := "config.yaml"
 	f, err := os.Open(cf)
@@ -58,6 +60,9 @@ func (cfg *YAMLCfgFile) Recover() error {
 
 	return nil
 }
+
+// Recover function using the JSONCfgFile as a driver, parses the JSON file loaded and
+// injects the content into a Config struct and exposes it in CFG global var
 func (cfg *JSONCfgFile) Recover() error {
 	// To be implemented
 	cf := "config.json"
@@ -65,6 +70,8 @@ func (cfg *JSONCfgFile) Recover() error {
 	return nil
 }
 
+// Recover function using the TOMLCfgFile as a driver, parses the TOML file loaded and
+// injects the content into a Config struct and exposes it in CFG global var
 func (cfg *TOMLCfgFile) Recover() error {
 	// To be implemented
 	cf := "config.toml"
@@ -74,7 +81,7 @@ func (cfg *TOMLCfgFile) Recover() error {
 
 // RecoverConfig function will recover Config File from the repo's root folder
 // it could be JSON, YAML or TOML.
-func RecoverConfig() Config {
+func RecoverConfig() {
 
 	var configFile Config
 
@@ -82,25 +89,30 @@ func RecoverConfig() Config {
 		cfg := JSONCfgFile(configFile)
 		err := cfg.Recover()
 		if err != nil {
-			panic("Error decoding JSON")
+			log.Panicln("Error decoding JSON")
 		}
-		return Config(cfg)
+		configFile = Config(cfg)
+
 	} else if _, err := os.Stat("config.yaml"); err == nil {
 		cfg := YAMLCfgFile(configFile)
 		err := cfg.Recover()
 		if err != nil {
-			panic("Error decoding YAML")
+			log.Panicln("Error decoding YAML")
 		}
-		return Config(cfg)
+		configFile = Config(cfg)
+
 	} else if _, err := os.Stat("config.toml"); err == nil {
 		cfg := TOMLCfgFile(configFile)
 		err := cfg.Recover()
 		if err != nil {
-			panic("Error decoding TOML")
+			log.Panicln("Error decoding TOML")
 		}
-		return Config(cfg)
+		configFile = Config(cfg)
+
 	} else {
-		log.Panic(`Config File does not exists, it should format: "yaml", "json" or "toml" with name "config"`)
-		return cfg
+		log.Panicln(`Config File does not exists, it should format: "yaml", "json" or "toml" with name "config"`)
+
 	}
+
+	CFG = configFile
 }
