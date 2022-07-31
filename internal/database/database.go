@@ -9,63 +9,91 @@ import (
 	"gorm.io/gorm"
 )
 
-var org model.Organization
-
-type DDBB struct{}
-type gobSqlite struct {
-	kind string
-	dsn  string
+type GOBSqlite struct {
+	Kind string
+	Dsn  string
 }
 
 type Setup interface {
-	//InitDB()
 	Connect() *gorm.DB
-	Close()
+	//Close()
 }
 
-/*func (sq sqlite) InitDB() {
-	_, err := os.Stat(CFG.)
+func (sq GOBSqlite) Connect() *gorm.DB {
+	cmd.MainLogger.Sugar().Debugf("---DEBUG---> DDBB Kind: %s DSN: %s", sq.Kind, sq.Dsn)
+	db, err := gorm.Open(sqlite.Open(sq.Dsn), &gorm.Config{})
 	if err != nil {
-		fmt.Println("BasePath for Log entries does not exists, creating...")
-		os.Mkdir(CFG.TMPFolder, 0754)
-	}
-}
-*/
-
-func (sq gobSqlite) Connect() *gorm.DB {
-	cmd.MainLogger.Debug(sq.dsn)
-	db, err := gorm.Open(sqlite.Open(sq.dsn), &gorm.Config{})
-	if err != nil {
-		cmd.MainLogger.Error("Error recovering DB Filename")
+		cmd.MainLogger.Sugar().Panicf("Error recovering DB File in filepath: %s", sq.Dsn)
 	}
 	return db
 }
 
+// Migrate function executes a DDBB AutoMigrate to precreate the tables, indexes, etc...
+// For more info check "go doc gorm.DB.Automigrate"
 func Migrate(db *gorm.DB) {
-	db.AutoMigrate(&model.Organization{}, &model.MLModel{}, &model.History{})
+	if err := db.AutoMigrate(
+		&model.Organization{},
+		&model.MLModel{},
+		&model.History{},
+	); err != nil {
+		cmd.MainLogger.Panic("Unable autoMigrateDB - " + err.Error())
+	}
 }
 
-func Identify(driver string) {
-	var query string
+// Connector function receives the Setup interface, which matches the receiver with every
+// kind of DDBB based on their type. Then the underhood function tries to connect it with gorm engine
+// and it returns the handler.
+func Connector(db Setup) *gorm.DB {
+	return db.Connect()
+}
+
+// Initialize function receives a driver string based on the implemented DDBB types.
+// It identifies the driver creating a type and trying to connect with the DDBB.
+// Depending on the DDBB type, the connection method could change.
+func Initialize(driver string) *gorm.DB {
+	var db *gorm.DB
 
 	switch driver {
+	// SQLite engine only needs to open an OS File
 	case "sqlite":
-		sqlite_db := gobSqlite{
-			kind: driver,
-			dsn:  string(cmd.CFG.TMPFolder + cmd.CFG.DB.DBName),
+		sqlite_db := GOBSqlite{
+			Kind: driver,
+			Dsn:  string(cmd.CFG.TMPFolder + cmd.CFG.DB.DBName),
 		}
-		db := sqlite_db.Connect()
-		db.AutoMigrate(&model.Organization{}, &model.MLModel{}, &model.History{})
-		db.Create(&model.Organization{Name: "org1"})
-		result := map[string]interface{}{}
-		db.First(&org)
-		db.Table("organizations").Take(&result)
-		for k, v := range result {
-			query += fmt.Sprintf("%v: %v\n", k, v)
-			//fmt.Printf("ID: %d,Name: %s\n", result["id"], result["name"])
-		}
-		cmd.MainLogger.Info(query)
+		db = Connector(sqlite_db)
+
+	// MySQL engine needs an IP:PORT, then a ping and then perform the connection against the server
+	case "mysql":
+		cmd.MainLogger.Panic("Engine MySQL not implemented")
+
+	// PostgreSQL engine needs an IP:PORT, then perform the connection against the server
+	case "postgres":
+		cmd.MainLogger.Panic("Engine Postgres not implemented")
 
 	}
+	Migrate(db)
+	cmd.MainLogger.Sugar().Infof(`DDBB Initialized with "%s" driver`, driver)
 
+	return db
+}
+
+func Prepopulate(db *gorm.DB) {
+
+	db.Create(&model.Organization{Name: "org1"})
+
+}
+
+func Query(db *gorm.DB) {
+
+	var query string
+	var org model.Organization
+
+	result := map[string]interface{}{}
+	db.First(&org)
+	db.Table("organizations").Take(&result)
+	for k, v := range result {
+		query += fmt.Sprintf("%v: %v\n", k, v)
+		//fmt.Printf("ID: %d,Name: %s\n", result["id"], result["name"])
+	}
+	cmd.MainLogger.Info(query)
 }

@@ -21,6 +21,8 @@ func InitLogger() {
 		os.Mkdir(CFG.TMPFolder, 0754)
 	}
 
+	var defaultLogLevel zapcore.LevelEnabler
+
 	loggerConfig := zap.NewProductionEncoderConfig()
 	loggerConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	fileEncoder := zapcore.NewJSONEncoder(loggerConfig)
@@ -30,7 +32,6 @@ func InitLogger() {
 		log.Panicf("Error openning the %s logfile to store logs\n", string(CFG.TMPFolder+CFG.Log.LogPath))
 	}
 	writer := zapcore.AddSync(logFile)
-	var defaultLogLevel zapcore.LevelEnabler
 
 	switch CFG.Log.LogLevel {
 	case "debug":

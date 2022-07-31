@@ -21,6 +21,10 @@ func main() {
 	cmd.InitLogger()
 	cmd.MainLogger.Info("Initializing DDBB")
 
-	database.Identify(cmd.CFG.DB.DBType)
+	// Recovering DB handler from initialization
+	db := database.Initialize(cmd.CFG.DB.DBType)
+
+	database.Prepopulate(db)
+	//database.Query(db)
 
 }

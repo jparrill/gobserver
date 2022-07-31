@@ -16,16 +16,16 @@ type Organization struct {
 // MLModel struct contains Name, OrganizationID (ForeignKey), Successes, Fails and the inherited gorm.Model fields
 type MLModel struct {
 	gorm.Model
-	Name           string `db:"name" 			json:"name"`
-	OrganizationID uint   `db:"organizationid" 	json:"organizationid"`
-	Successes      uint   `db:"successes" 		json:"successes"`
-	Fails          uint   `db:"fails" 			json:"fails"`
+	Name           string `db:"name" json:"name"`
+	OrganizationID uint   `db:"organizationid" json:"organizationid"`
+	Successes      uint   `db:"successes" json:"successes"`
+	Fails          uint   `db:"fails" json:"fails"`
 }
 
 // History struct contains OrganizationID (ForeignKey), MLModelID (ForeignKey), Success (Bool) and the inherited gorm.Model fields
 type History struct {
 	gorm.Model
-	OrganizationID uint `db:"organizationid" 	json:"organizationid"`
-	MLModelID      uint `db:"mlmodelid" 		json:"mlmodelid"`
-	Success        bool `db:"sucess" 			json:"-"`
+	OrganizationID uint `db:"organizationid" json:"organizationid"`
+	MLModelID      uint `db:"mlmodelid" json:"mlmodelid"`
+	Success        bool `db:"sucess" json:"-"`
 }
