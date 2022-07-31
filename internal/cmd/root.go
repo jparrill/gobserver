@@ -1,11 +1,12 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var MainLogger *zap.Logger
@@ -20,27 +21,39 @@ func InitLogger() {
 		os.Mkdir(CFG.TMPFolder, 0754)
 	}
 
-	rawJSON := []byte(`{
-	  "level": "` + CFG.Log.LogLevel + `",
-	  "encoding": "json",
-	  "outputPaths": ["stdout", "` + CFG.Log.LogPath + `"],
-	  "errorOutputPaths": ["stderr"],
-	  "encoderConfig": {
-	    "messageKey": "message",
-	    "levelKey": "level",
-	    "levelEncoder": "uppercase"
-	  }
-	}`)
-
-	var loggerConfig zap.Config
-
-	if err := json.Unmarshal(rawJSON, &loggerConfig); err != nil {
-		panic(err)
-	}
-	MainLogger, err = loggerConfig.Build()
+	loggerConfig := zap.NewProductionEncoderConfig()
+	loggerConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	fileEncoder := zapcore.NewJSONEncoder(loggerConfig)
+	consoleEncoder := zapcore.NewConsoleEncoder(loggerConfig)
+	logFile, _ := os.OpenFile(CFG.Log.LogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		panic(err)
+		log.Panicf("Error openning the %s logfile to store logs\n", string(CFG.TMPFolder+CFG.Log.LogPath))
 	}
+	writer := zapcore.AddSync(logFile)
+	var defaultLogLevel zapcore.LevelEnabler
+
+	switch CFG.Log.LogLevel {
+	case "debug":
+		defaultLogLevel = zapcore.DebugLevel
+	case "info":
+		defaultLogLevel = zapcore.InfoLevel
+	case "warn":
+		defaultLogLevel = zapcore.WarnLevel
+	case "error":
+		defaultLogLevel = zapcore.ErrorLevel
+	case "panic":
+		defaultLogLevel = zapcore.PanicLevel
+	case "fatal":
+		defaultLogLevel = zapcore.FatalLevel
+	default:
+		log.Panicln(`LogLevel Not implemented, please check "go doc zapcore.DebugLevel"`)
+	}
+	core := zapcore.NewTee(
+		zapcore.NewCore(fileEncoder, writer, defaultLogLevel),
+		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), defaultLogLevel),
+	)
+	MainLogger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+
 	defer MainLogger.Sync()
 
 	MainLogger.Info("Logger construction succeeded")

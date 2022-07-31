@@ -30,7 +30,12 @@ type Config struct {
 	} `yaml:"db" json:"db"`
 	// Log related config
 	Log struct {
-		LogPath  string `yaml:"logpath" json:"logpath"`
+		// Concanetated with TMPFolder
+		LogPath string `yaml:"logpath" json:"logpath"`
+		// Loglevel option can be these ones: debug|info|warn|error|panic|fatal.
+		// For more info check gobserver/internal/cmd/root.go on the switch statement.
+		// The log level are equivalent to zapcore.LevelEnabler type.
+		// For more into check "go doc zapcore.LevelEnabler" or "go doc zapcore.DebugLevel"
 		LogLevel string `yaml:"loglevel" json:"loglevel"`
 	} `yaml:"log" json:"log"`
 }

@@ -46,6 +46,7 @@ func Migrate(db *gorm.DB) {
 }
 
 func Identify(driver string) {
+	var query string
 
 	switch driver {
 	case "sqlite":
@@ -60,9 +61,10 @@ func Identify(driver string) {
 		db.First(&org)
 		db.Table("organizations").Take(&result)
 		for k, v := range result {
-			fmt.Printf("%v: %v\n", k, v)
+			query += fmt.Sprintf("%v: %v\n", k, v)
 			//fmt.Printf("ID: %d,Name: %s\n", result["id"], result["name"])
 		}
+		cmd.MainLogger.Info(query)
 
 	}
 
