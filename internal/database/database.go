@@ -1,10 +1,11 @@
 package database
 
 import (
-	"fmt"
+	"encoding/json"
+	"io/ioutil"
 
 	"github.com/jparrill/gobserver/internal/cmd"
-	"github.com/jparrill/gobserver/internal/model"
+	"github.com/jparrill/gobserver/internal/entities"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -12,6 +13,14 @@ import (
 type GOBSqlite struct {
 	Kind string
 	Dsn  string
+}
+
+type Object struct {
+	OrgId            int
+	OrgName          string
+	MlmodelName      string
+	MlmodelSuccesses int
+	MlmodelFails     int
 }
 
 type Setup interface {
@@ -32,9 +41,9 @@ func (sq GOBSqlite) Connect() *gorm.DB {
 // For more info check "go doc gorm.DB.Automigrate"
 func Migrate(db *gorm.DB) {
 	if err := db.AutoMigrate(
-		&model.Organization{},
-		&model.MLModel{},
-		&model.History{},
+		&entities.Organization{},
+		&entities.MLModel{},
+		&entities.History{},
 	); err != nil {
 		cmd.MainLogger.Panic("Unable autoMigrateDB - " + err.Error())
 	}
@@ -51,6 +60,17 @@ func Connector(db Setup) *gorm.DB {
 // It identifies the driver creating a type and trying to connect with the DDBB.
 // Depending on the DDBB type, the connection method could change.
 func Initialize(driver string) *gorm.DB {
+	var db *gorm.DB
+
+	db = GetDB(driver)
+	Migrate(db)
+	cmd.MainLogger.Sugar().Infof(`DDBB Initialized with "%s" driver`, driver)
+
+	return db
+}
+
+// GetDB function returns a DDBB handler
+func GetDB(driver string) *gorm.DB {
 	var db *gorm.DB
 
 	switch driver {
@@ -71,29 +91,36 @@ func Initialize(driver string) *gorm.DB {
 		cmd.MainLogger.Panic("Engine Postgres not implemented")
 
 	}
-	Migrate(db)
-	cmd.MainLogger.Sugar().Infof(`DDBB Initialized with "%s" driver`, driver)
 
 	return db
 }
 
 func Prepopulate(db *gorm.DB) {
 
-	db.Create(&model.Organization{Name: "org1"})
+	var fixtures []Object
 
-}
-
-func Query(db *gorm.DB) {
-
-	var query string
-	var org model.Organization
-
-	result := map[string]interface{}{}
-	db.First(&org)
-	db.Table("organizations").Take(&result)
-	for k, v := range result {
-		query += fmt.Sprintf("%v: %v\n", k, v)
-		//fmt.Printf("ID: %d,Name: %s\n", result["id"], result["name"])
+	fixturesFile, err := ioutil.ReadFile("fixtures/prepopulate_db.json")
+	if err != nil {
+		cmd.MainLogger.Sugar().Errorf("Error converting JSON file to []byte: %s", err)
 	}
-	cmd.MainLogger.Info(query)
+
+	err = json.Unmarshal([]byte(fixturesFile), &fixtures)
+	if err != nil {
+		cmd.MainLogger.Sugar().Errorf("Error unmarshalling fixtures file: %s", err)
+	}
+
+	for i, v := range fixtures {
+		cmd.MainLogger.Sugar().Infof("Creating Asset %d: %v", i, v)
+		db.Create(&entities.Organization{
+			Name: v.OrgName,
+		})
+
+		db.Create(&entities.MLModel{
+			Name:           v.MlmodelName,
+			OrganizationID: uint(v.OrgId),
+			Successes:      uint(v.MlmodelSuccesses),
+			Fails:          uint(v.MlmodelFails),
+		})
+	}
+
 }

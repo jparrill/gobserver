@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jparrill/gobserver/internal/cmd"
 	"github.com/jparrill/gobserver/internal/database"
+	"github.com/jparrill/gobserver/internal/models"
 )
 
 var ctx context.Context
@@ -25,6 +27,18 @@ func main() {
 	db := database.Initialize(cmd.CFG.DB.DBType)
 
 	database.Prepopulate(db)
-	//database.Query(db)
 
+	var orgModel models.OrganizationModel
+	orgs := orgModel.FindAll()
+	for _, org := range orgs {
+		fmt.Println(org.ToString())
+		fmt.Println("--------------")
+	}
+
+	var mlModModel models.MLModModel
+	mlmodels := mlModModel.FindAll()
+	for _, ml := range mlmodels {
+		fmt.Println(ml.ToString())
+		fmt.Println("--------------")
+	}
 }

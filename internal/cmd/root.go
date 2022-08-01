@@ -27,9 +27,9 @@ func InitLogger() {
 	loggerConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	fileEncoder := zapcore.NewJSONEncoder(loggerConfig)
 	consoleEncoder := zapcore.NewConsoleEncoder(loggerConfig)
-	logFile, _ := os.OpenFile(CFG.Log.LogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, err := os.OpenFile(CFG.Log.LogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Panicf("Error openning the %s logfile to store logs\n", string(CFG.TMPFolder+CFG.Log.LogPath))
+		log.Panicf("Error openning the %s logfile to store logs\n", CFG.Log.LogPath)
 	}
 	writer := zapcore.AddSync(logFile)
 
