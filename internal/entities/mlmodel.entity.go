@@ -10,8 +10,8 @@ import (
 type MLModel struct {
 	gorm.Model
 	Name           string `db:"name" json:"name"`
-	OrganizationID uint   `db:"organizationid" json:"organizationid"`
 	Organization   Organization
+	OrganizationID uint
 	Successes      uint `db:"successes" json:"successes"`
 	Fails          uint `db:"fails" json:"fails"`
 }

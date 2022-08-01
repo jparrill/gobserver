@@ -40,6 +40,7 @@ func (sq GOBSqlite) Connect() *gorm.DB {
 // Migrate function executes a DDBB AutoMigrate to precreate the tables, indexes, etc...
 // For more info check "go doc gorm.DB.Automigrate"
 func Migrate(db *gorm.DB) {
+	db.Exec("PRAGMA foreign_keys = ON;")
 	if err := db.AutoMigrate(
 		&entities.Organization{},
 		&entities.MLModel{},
@@ -109,18 +110,37 @@ func Prepopulate(db *gorm.DB) {
 		cmd.MainLogger.Sugar().Errorf("Error unmarshalling fixtures file: %s", err)
 	}
 
-	for i, v := range fixtures {
-		cmd.MainLogger.Sugar().Infof("Creating Asset %d: %v", i, v)
-		db.Create(&entities.Organization{
-			Name: v.OrgName,
-		})
+	var org entities.Organization
+	var mlmodel entities.MLModel
 
-		db.Create(&entities.MLModel{
+	for i, v := range fixtures {
+		var q entities.Organization
+		// Insert Organization
+		cmd.MainLogger.Sugar().Infof("Creating Asset %d: %v", i, v)
+
+		// Check the OrgID from a query
+		db.Table("organizations").Where("Name = ?", v.OrgName).Find(&q)
+
+		// If the org not exists, create it
+		if q.Name == "" {
+			org = entities.Organization{
+				Name: v.OrgName,
+			}
+			db.Create(&org)
+		}
+
+		// If the org did not exists, the id is empty, so we recover again the resource
+		if q.ID == 0 {
+			db.Table("organizations").Where("Name = ?", v.OrgName).Find(&q)
+		}
+		// Insert ML Model into Into Organization
+		mlmodel = entities.MLModel{
 			Name:           v.MlmodelName,
-			OrganizationID: uint(v.OrgId),
+			OrganizationID: uint(q.ID),
 			Successes:      uint(v.MlmodelSuccesses),
 			Fails:          uint(v.MlmodelFails),
-		})
+		}
+		db.Create(&mlmodel)
 	}
 
 }

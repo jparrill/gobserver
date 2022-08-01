@@ -13,5 +13,6 @@ func (mlModModel MLModModel) FindAll() []entities.MLModel {
 
 	db := database.GetDB(cmd.CFG.DB.DBType)
 	db.Find(&mlmodels)
+	db.Model(&entities.MLModel{}).Preload("Organization").Find(&mlmodels)
 	return mlmodels
 }

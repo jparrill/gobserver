@@ -1,47 +1,47 @@
 [
-    {"orgId": 0,
+    {
      "orgName": "client1",
      "mlmodelName": "Decision tree",
      "mlmodelSuccesses": 0,
      "mlmodelFails": 0
     },
-    {"orgId": 0,
+    {
      "orgName": "client1",
      "mlmodelName": "Linear regression",
      "mlmodelSuccesses": 0,
      "mlmodelFails": 0
     },
-    {"orgId": 0,
+    {
      "orgName": "client1",
      "mlmodelName": "Support Vector Machines",
      "mlmodelSuccesses": 0,
      "mlmodelFails": 0
     },
-    {"orgId": 0,
+    {
      "orgName": "client1",
      "mlmodelName": "Naive Bayes",
      "mlmodelSuccesses": 0,
      "mlmodelFails": 0
     },
-    {"orgId": 0,
+    {
      "orgName": "client1",
      "mlmodelName": "fib",
      "mlmodelSuccesses": 0,
      "mlmodelFails": 0
     },
-    {"orgId": 1,
+    {
      "orgName": "client2",
      "mlmodelName": "fib",
      "mlmodelSuccesses": 0,
      "mlmodelFails": 0
     },
-    {"orgId": 1,
+    {
      "orgName": "client2",
      "mlmodelName": "Naive Bayes",
      "mlmodelSuccesses": 0,
      "mlmodelFails": 0
     },
-    {"orgId": 1,
+    {
      "orgName": "client2",
      "mlmodelName": "Linear regression",
      "mlmodelSuccesses": 0,

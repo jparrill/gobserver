@@ -8,8 +8,8 @@ import (
 
 // Organization struct contains the Name and the inherited gorm.Model fields
 type Organization struct {
-	ID   uint   `db:"id" json:"id" gorm:"autoIncrement,Unique"`
-	Name string `db:"name" json:"name" gorm:"primaryKey"`
+	ID   uint   `gorm:"primaryKey"`
+	Name string `gorm:"Unique"`
 }
 
 func (org *Organization) TableName() string {

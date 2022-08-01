@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jparrill/gobserver/internal/cmd"
 	"github.com/jparrill/gobserver/internal/database"
@@ -28,17 +27,21 @@ func main() {
 
 	database.Prepopulate(db)
 
-	var orgModel models.OrganizationModel
-	orgs := orgModel.FindAll()
-	for _, org := range orgs {
-		fmt.Println(org.ToString())
-		fmt.Println("--------------")
-	}
+	//var orgModel models.OrganizationModel
+	//orgs := orgModel.FindAll()
+	//for _, org := range orgs {
+	//	fmt.Println(org.ToString())
+	//	fmt.Println("--------------")
+	//}
 
-	var mlModModel models.MLModModel
-	mlmodels := mlModModel.FindAll()
-	for _, ml := range mlmodels {
-		fmt.Println(ml.ToString())
-		fmt.Println("--------------")
-	}
+	//var mlModModel models.MLModModel
+	//mlmodels := mlModModel.FindAll()
+	//for _, ml := range mlmodels {
+	//	fmt.Println(ml.ToString())
+	//	fmt.Println("--------------")
+	//}
+
+	var orgModel models.OrganizationModel
+	orgModel.CreateOrg("client3")
+
 }

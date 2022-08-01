@@ -9,10 +9,10 @@ import (
 // History struct contains OrganizationID (ForeignKey), MLModelID (ForeignKey), Success (Bool) and the inherited gorm.Model fields
 type History struct {
 	gorm.Model
-	OrganizationID uint `db:"organizationid" json:"organizationid"`
 	Organization   Organization
-	MLModelID      uint `db:"mlmodelid" json:"mlmodelid"`
+	OrganizationID uint
 	MLModel        MLModel
+	MLModelID      uint
 	Success        bool `db:"success" json:"-"`
 }
 
