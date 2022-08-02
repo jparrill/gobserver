@@ -1,0 +1,9 @@
+tmpfolder: "/tmp/gobserver/"
+db:
+  dbname: "sample.db"
+  dbtype: "sqlite"
+  dbuser: "root"
+  dbpass: "password"
+log:
+  logpath: "/tmp/gobserver/logs"
+  loglevel: "debug"

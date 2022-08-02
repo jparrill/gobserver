@@ -2,10 +2,12 @@ package database
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/jparrill/gobserver/internal/cmd"
 	"github.com/jparrill/gobserver/internal/entities"
+	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -13,6 +15,16 @@ import (
 type GOBSqlite struct {
 	Kind string
 	Dsn  string
+}
+
+type GOBMysql struct {
+	Kind   string
+	DBUser string
+	DBPass string
+	DBName string
+	DBHost string
+	DBPort string
+	Dsn    string
 }
 
 type Object struct {
@@ -34,13 +46,22 @@ func (sq GOBSqlite) Connect() *gorm.DB {
 	if err != nil {
 		cmd.MainLogger.Sugar().Panicf("Error recovering DB File in filepath: %s", sq.Dsn)
 	}
+	db.Exec("PRAGMA foreign_keys = ON;")
+	return db
+}
+
+func (my GOBMysql) Connect() *gorm.DB {
+	cmd.MainLogger.Sugar().Debugf("---DEBUG---> DDBB Kind: %s DSN: %s", my.Kind, my.Dsn)
+	db, err := gorm.Open(mysql.Open(my.Dsn), &gorm.Config{})
+	if err != nil {
+		cmd.MainLogger.Sugar().Panicf("Error connecting MySQL DDBB: %s", my.Dsn)
+	}
 	return db
 }
 
 // Migrate function executes a DDBB AutoMigrate to precreate the tables, indexes, etc...
 // For more info check "go doc gorm.DB.Automigrate"
 func Migrate(db *gorm.DB) {
-	db.Exec("PRAGMA foreign_keys = ON;")
 	if err := db.AutoMigrate(
 		&entities.Organization{},
 		&entities.MLModel{},
@@ -85,7 +106,22 @@ func GetDB(driver string) *gorm.DB {
 
 	// MySQL engine needs an IP:PORT, then a ping and then perform the connection against the server
 	case "mysql":
-		cmd.MainLogger.Panic("Engine MySQL not implemented")
+		mysql_db := GOBMysql{
+			Kind:   driver,
+			DBName: cmd.CFG.DB.DBName,
+			DBUser: cmd.CFG.DB.DBUser,
+			DBPass: cmd.CFG.DB.DBPass,
+			DBHost: cmd.CFG.DB.DBHost,
+			DBPort: cmd.CFG.DB.DBPort,
+			Dsn: fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+				cmd.CFG.DB.DBUser,
+				cmd.CFG.DB.DBPass,
+				cmd.CFG.DB.DBHost,
+				cmd.CFG.DB.DBPort,
+				cmd.CFG.DB.DBName,
+			),
+		}
+		db = Connector(mysql_db)
 
 	// PostgreSQL engine needs an IP:PORT, then perform the connection against the server
 	case "postgres":

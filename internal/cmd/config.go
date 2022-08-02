@@ -27,6 +27,10 @@ type Config struct {
 		DBUser string `yaml:"dbuser" json:"dbuser"`
 		// DBPass
 		DBPass string `yaml:"dbpass" json:"dbpass"`
+		// DBHost
+		DBHost string `yaml:"dbhost" json:"dbhost"`
+		// DBPort
+		DBPort string `yaml:"dbport" json:"dbport"`
 	} `yaml:"db" json:"db"`
 	// Log related config
 	Log struct {
