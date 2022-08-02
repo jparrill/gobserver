@@ -44,7 +44,7 @@ configure_mysql:
 	@echo " -----> Configuring User and Grants on MySQL Server..."
 	@MYSQL_PWD=rootpass mysql -uroot -h127.0.0.1 -P3306 -e "GRANT CREATE ON *.* TO 'gobuser'@'%';"
 	@MYSQL_PWD=rootpass mysql -uroot -h127.0.0.1 -P3306 -e "GRANT ALL PRIVILEGES ON gobserver.* TO 'gobuser'@'%';"
-	@echo " -----> Checking the new user configured..."
+	@echo " -----> Checking the new user..."
 	@MYSQL_PWD=gobpass mysql -ugobuser -Dgobserver -h127.0.0.1 -P3306 -e 'show global variables like "max_connections"'
 
 check_mysql:
@@ -60,4 +60,38 @@ clean_mysql:
 
 sleep_mysql:
 	@echo " -----> Waiting for MYSQL Container to raise up..."
+	@sleep 30
+
+######################
+##### PostgreSQL #####
+######################
+
+pgsql: clean_pgsql run_pgsql sleep_pgsql check_pgsql configure_pgsql
+
+run_pgsql:
+	@echo " -----> Raising up a PostgreSQL Server: "
+	@mkdir -p /tmp/gobserver/pgsql
+	@docker run -d --name gobserver_pgsql_db -v /tmp/gobserver/pgsql:/var/lib/postgresql/data -p 5432:5432 -e PGDATA=/var/lib/postgresql/data/pgdata -e POSTGRES_USER=root -e POSTGRES_PASSWORD=rootpass postgres
+
+configure_pgsql:
+	@echo " -----> Configuring User and Grants on PostgreSQL Server..."
+	@PGPASSWORD=rootpass psql -v -w -U root -h127.0.0.1 -p5432 -c "CREATE DATABASE gobserver;"
+	@PGPASSWORD=rootpass psql -v -w -U root -h127.0.0.1 -p5432 -c "CREATE USER gobuser with encrypted password 'gobpass';"
+	@PGPASSWORD=rootpass psql -v -w -U root -h127.0.0.1 -p5432 -c "GRANT ALL privileges on database gobserver to gobuser;"
+	@echo " -----> Checking the new user..."
+	@PGPASSWORD=gobpass pg_isready -dgobserver -Ugobuser -h127.0.0.1 -p5432
+
+check_pgsql:
+	@echo " -----> Checking PostgreSQL Server connectivity..."
+	@PGPASSWORD=gobpass pg_isready -dgobserver -Ugobuser -h127.0.0.1 -p5432
+
+clean_pgsql:
+	@echo " -----> Cleaning up a PostgreSQL Container..."
+	@docker stop gobserver_pgsql_db
+	@docker rm gobserver_pgsql_db
+	@echo " -----> Cleaning up a PostgreSQL files..."
+	@rm -rf /tmp/gobserver/pgsql
+
+sleep_pgsql:
+	@echo " -----> Waiting for PostgreSQL Container to raise up..."
 	@sleep 30
