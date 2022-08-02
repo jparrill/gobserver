@@ -23,14 +23,18 @@ type Config struct {
 		DBName string `yaml:"dbname" json:"dbname"`
 		// DBType: "sqlite"|"mysql"|"postgres"
 		DBType string `yaml:"dbtype" json:"dbtype"`
-		// DBUser
+		// DBUser "gobuser"
 		DBUser string `yaml:"dbuser" json:"dbuser"`
-		// DBPass
+		// DBPass "P4$$w0rD"
 		DBPass string `yaml:"dbpass" json:"dbpass"`
-		// DBHost
+		// DBHost "127.0.0.1"
 		DBHost string `yaml:"dbhost" json:"dbhost"`
-		// DBPort
+		// DBPort "5432"
 		DBPort string `yaml:"dbport" json:"dbport"`
+		// DBSSL "enable|disable"
+		DBSSL string `yaml:"dbssl" json:"dbssl"`
+		// DBTimeZone "UTC" "Asia/Shanghai"
+		DBTimeZone string `yaml:"dbtimezone" json:"dbtimezone"`
 	} `yaml:"db" json:"db"`
 	// Log related config
 	Log struct {

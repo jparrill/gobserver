@@ -8,6 +8,7 @@ import (
 	"github.com/jparrill/gobserver/internal/cmd"
 	"github.com/jparrill/gobserver/internal/entities"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -25,6 +26,18 @@ type GOBMysql struct {
 	DBHost string
 	DBPort string
 	Dsn    string
+}
+
+type GOBPostgreSQL struct {
+	Kind       string
+	DBUser     string
+	DBPass     string
+	DBName     string
+	DBHost     string
+	DBPort     string
+	DBSSL      string
+	DBTimeZone string
+	Dsn        string
 }
 
 type Object struct {
@@ -55,6 +68,15 @@ func (my GOBMysql) Connect() *gorm.DB {
 	db, err := gorm.Open(mysql.Open(my.Dsn), &gorm.Config{})
 	if err != nil {
 		cmd.MainLogger.Sugar().Panicf("Error connecting MySQL DDBB: %s", my.Dsn)
+	}
+	return db
+}
+
+func (pg GOBPostgreSQL) Connect() *gorm.DB {
+	cmd.MainLogger.Sugar().Debugf("---DEBUG---> DDBB Kind: %s DSN: %s", pg.Kind, pg.Dsn)
+	db, err := gorm.Open(postgres.Open(pg.Dsn), &gorm.Config{})
+	if err != nil {
+		cmd.MainLogger.Sugar().Panicf("Error connecting PostgreSQL DDBB: %s", pg.Dsn)
 	}
 	return db
 }
@@ -125,7 +147,26 @@ func GetDB(driver string) *gorm.DB {
 
 	// PostgreSQL engine needs an IP:PORT, then perform the connection against the server
 	case "postgres":
-		cmd.MainLogger.Panic("Engine Postgres not implemented")
+		pgsql_db := GOBPostgreSQL{
+			Kind:       driver,
+			DBName:     cmd.CFG.DB.DBName,
+			DBUser:     cmd.CFG.DB.DBUser,
+			DBPass:     cmd.CFG.DB.DBPass,
+			DBHost:     cmd.CFG.DB.DBHost,
+			DBPort:     cmd.CFG.DB.DBPort,
+			DBSSL:      cmd.CFG.DB.DBSSL,
+			DBTimeZone: cmd.CFG.DB.DBTimeZone,
+			Dsn: fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
+				cmd.CFG.DB.DBHost,
+				cmd.CFG.DB.DBUser,
+				cmd.CFG.DB.DBPass,
+				cmd.CFG.DB.DBName,
+				cmd.CFG.DB.DBPort,
+				cmd.CFG.DB.DBSSL,
+				cmd.CFG.DB.DBTimeZone,
+			),
+		}
+		db = Connector(pgsql_db)
 
 	}
 
