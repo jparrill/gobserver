@@ -8,6 +8,7 @@ import (
 
 type OrganizationModel struct{}
 
+//FindById function looks for all Organizations in the DDBB
 func (organizationModel OrganizationModel) FindAll() []entities.Organization {
 	var orgs []entities.Organization
 
@@ -16,6 +17,7 @@ func (organizationModel OrganizationModel) FindAll() []entities.Organization {
 	return orgs
 }
 
+//FindById function looks for Organization using the Name as an argument
 func (organizationModel OrganizationModel) FindByName(orgName string) entities.Organization {
 	var org entities.Organization
 
@@ -24,6 +26,7 @@ func (organizationModel OrganizationModel) FindByName(orgName string) entities.O
 	return org
 }
 
+//FindById function looks for Organization using the ID as an argument
 func (organizationModel OrganizationModel) FindById(orgID uint) entities.Organization {
 	var org entities.Organization
 
@@ -33,7 +36,8 @@ func (organizationModel OrganizationModel) FindById(orgID uint) entities.Organiz
 }
 
 // CreateOrg function creates entries in DDBB based on org Name
-func (organizationModel OrganizationModel) CreateOrg(orgName string) {
+// It returns the created Organization to be shown
+func (organizationModel OrganizationModel) CreateOrg(orgName string) entities.Organization {
 	var org entities.Organization
 
 	// Recover DDBB
@@ -50,4 +54,6 @@ func (organizationModel OrganizationModel) CreateOrg(orgName string) {
 		Name: orgName,
 	}
 	db.Create(&org)
+
+	return org
 }
