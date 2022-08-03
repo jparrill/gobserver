@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -22,4 +23,8 @@ func (h *History) TableName() string {
 
 func (h History) ToString() string {
 	return fmt.Sprintf("id: %d\norg_id: %d\nmlmodel_id: %d\nsuccess: %v", h.ID, h.OrganizationID, h.MLModelID, h.Success)
+}
+
+func (h History) ToJson() ([]byte, error) {
+	return json.Marshal(&h)
 }

@@ -3,6 +3,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -12,10 +13,17 @@ type Organization struct {
 	Name string `gorm:"Unique"`
 }
 
+// TableName function returns the TableName
 func (org *Organization) TableName() string {
 	return "organizations"
 }
 
+// ToJson returns string formatted organization struct
 func (org Organization) ToString() string {
 	return fmt.Sprintf("id: %d\nname: %s\n", org.ID, org.Name)
+}
+
+// ToJson returns JSON formatted organization struct
+func (org Organization) ToJson() ([]byte, error) {
+	return json.Marshal(&org)
 }
