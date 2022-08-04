@@ -28,11 +28,11 @@ func main() {
 
 	database.Prepopulate(db)
 
-	var orgModel models.OrganizationModel
-	orgs := orgModel.FindAll()
-	for _, org := range orgs {
-		o, _ := org.ToJson()
-		fmt.Println(string(o))
+	var mlmodsmod models.MLModModel
+	mlmods, _ := mlmodsmod.FindAll()
+	for _, mlmod := range mlmods {
+		ml, _ := mlmod.ToJson()
+		fmt.Println(string(ml))
 		fmt.Println("--------------")
 	}
 
@@ -42,7 +42,5 @@ func main() {
 	//	fmt.Println(ml.ToString())
 	//	fmt.Println("--------------")
 	//}
-
-	//orgModel.CreateOrg("client3")
 
 }
