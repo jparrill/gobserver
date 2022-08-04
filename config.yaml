@@ -1,5 +1,5 @@
 tmpfolder: "/tmp/gobserver/"
-appport: ":8081"
+appport: "127.0.0.1:8080"
 db:
   dbname: "sample.db"
   dbtype: "sqlite"

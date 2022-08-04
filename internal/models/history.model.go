@@ -33,7 +33,7 @@ func (historyModel HistoryModel) FindMlModelHistory(MLModelID int, orgName strin
 	db := database.GetDB(config.CFG.DB.DBType)
 	db.Table("organizations").Where("Name = ?", orgName).Find(&org)
 	if org.Name == "" {
-		config.MainLogger.Sugar().Errorf("Organization does not exists: %s\n", orgName)
+		config.MainLogger.Sugar().Panicf("Organization does not exists: %s\n", orgName)
 		err = ErrorModel{
 			Msg:  fmt.Sprintf("Organization does not exists: %s\n", orgName),
 			Code: 404,

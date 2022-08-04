@@ -9,8 +9,8 @@ import (
 
 // Organization struct contains the Name and the inherited gorm.Model fields
 type Organization struct {
-	ID   uint   `gorm:"primaryKey"`
-	Name string `gorm:"Unique"`
+	ID   uint   `gorm:"primaryKey" json:"id"`
+	Name string `gorm:"Unique" json:"orgName"`
 }
 
 // TableName function returns the TableName

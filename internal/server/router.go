@@ -25,7 +25,9 @@ func NewRouter() *gin.Engine {
 		orgGroup := v1.Group("org")
 		{
 			org := new(controllers.OrganizationController)
-			orgGroup.GET("/:id", org.Retrieve)
+			orgGroup.GET("/name/:name", org.Retrieve)
+			orgGroup.GET("/id/:id", org.Retrieve)
+			orgGroup.POST("/add", org.Create)
 		}
 	}
 	return router

@@ -179,12 +179,12 @@ func Prepopulate(db *gorm.DB) {
 
 	fixturesFile, err := ioutil.ReadFile("fixtures/prepopulate_db.json")
 	if err != nil {
-		config.MainLogger.Sugar().Errorf("Error converting JSON file to []byte: %s", err)
+		config.MainLogger.Sugar().Panicf("Error converting JSON file to []byte: %s", err)
 	}
 
 	err = json.Unmarshal([]byte(fixturesFile), &fixtures)
 	if err != nil {
-		config.MainLogger.Sugar().Errorf("Error unmarshalling fixtures file: %s", err)
+		config.MainLogger.Sugar().Panicf("Error unmarshalling fixtures file: %s", err)
 	}
 
 	var org entities.Organization

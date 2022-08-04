@@ -69,7 +69,7 @@ func (mlModModel MLModModel) CreateMLModel(mlmodName string, orgName string) (en
 	// We don't need to check if the mlmodel exists in the DDBB because the entity allows duplication by name, but we need to check the Organization
 	db.Table("organizations").Where("Name = ?", orgName).Find(&org)
 	if org.Name == "" {
-		config.MainLogger.Sugar().Errorf("Organization does not exists and cannot be associated with the MLModel: %s\n", orgName)
+		config.MainLogger.Sugar().Panicf("Organization does not exists and cannot be associated with the MLModel: %s\n", orgName)
 		err = ErrorModel{
 			Msg:  fmt.Sprintf("Organization does not exists and cannot be associated with the MLModel: %s\n", orgName),
 			Code: 500,
