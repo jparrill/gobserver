@@ -1,4 +1,5 @@
 tmpfolder: "/tmp/gobserver/"
+appport: ":8081"
 db:
   dbname: "gobserver"
   dbtype: "postgres"

@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 
-	"github.com/jparrill/gobserver/internal/cmd"
+	"github.com/jparrill/gobserver/internal/config"
 	"github.com/jparrill/gobserver/internal/database"
 	"github.com/jparrill/gobserver/internal/entities"
 )
@@ -15,7 +15,7 @@ func (organizationModel OrganizationModel) FindAll() ([]entities.Organization, E
 	var orgs []entities.Organization
 	var err ErrorModel
 
-	db := database.GetDB(cmd.CFG.DB.DBType)
+	db := database.GetDB(config.CFG.DB.DBType)
 	db.Find(&orgs)
 	if len(orgs) == 0 {
 		err = ErrorModel{
@@ -31,7 +31,7 @@ func (organizationModel OrganizationModel) FindByName(orgName string) (entities.
 	var org entities.Organization
 	var err ErrorModel
 
-	db := database.GetDB(cmd.CFG.DB.DBType)
+	db := database.GetDB(config.CFG.DB.DBType)
 	result := db.Table("organizations").Where("Name = ?", orgName).Find(&org)
 	if result.Error != nil {
 		err = ErrorModel{
@@ -47,7 +47,7 @@ func (organizationModel OrganizationModel) FindById(orgID uint) (entities.Organi
 	var org entities.Organization
 	var err ErrorModel
 
-	db := database.GetDB(cmd.CFG.DB.DBType)
+	db := database.GetDB(config.CFG.DB.DBType)
 	result := db.Table("organizations").Where("id = ?", orgID).Find(&org)
 	if result.Error != nil {
 		err = ErrorModel{
@@ -65,12 +65,12 @@ func (organizationModel OrganizationModel) CreateOrg(orgName string) (entities.O
 	var err ErrorModel
 
 	// Recover DDBB
-	db := database.GetDB(cmd.CFG.DB.DBType)
+	db := database.GetDB(config.CFG.DB.DBType)
 
 	// Check if value exists in DDBB
 	db.Table("organizations").Where("Name = ?", orgName).Find(&org)
 	if org.Name != "" {
-		cmd.MainLogger.Sugar().Errorf("Organization ID already exists and cannot be created: %s\n", org.Name)
+		config.MainLogger.Sugar().Errorf("Organization ID already exists and cannot be created: %s\n", org.Name)
 		err = ErrorModel{
 			Msg:  "Organization cannot be created because already exists",
 			Code: 500,

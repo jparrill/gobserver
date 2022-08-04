@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/jparrill/gobserver/internal/cmd"
+	"github.com/jparrill/gobserver/internal/config"
 	"github.com/jparrill/gobserver/internal/entities"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -54,29 +54,29 @@ type Setup interface {
 }
 
 func (sq GOBSqlite) Connect() *gorm.DB {
-	cmd.MainLogger.Sugar().Debugf("---DEBUG---> DDBB Kind: %s DSN: %s", sq.Kind, sq.Dsn)
+	config.MainLogger.Sugar().Debugf("---DEBUG---> DDBB Kind: %s DSN: %s", sq.Kind, sq.Dsn)
 	db, err := gorm.Open(sqlite.Open(sq.Dsn), &gorm.Config{})
 	if err != nil {
-		cmd.MainLogger.Sugar().Panicf("Error recovering DB File in filepath: %s", sq.Dsn)
+		config.MainLogger.Sugar().Panicf("Error recovering DB File in filepath: %s", sq.Dsn)
 	}
 	db.Exec("PRAGMA foreign_keys = ON;")
 	return db
 }
 
 func (my GOBMysql) Connect() *gorm.DB {
-	cmd.MainLogger.Sugar().Debugf("---DEBUG---> DDBB Kind: %s DSN: %s", my.Kind, my.Dsn)
+	config.MainLogger.Sugar().Debugf("---DEBUG---> DDBB Kind: %s DSN: %s", my.Kind, my.Dsn)
 	db, err := gorm.Open(mysql.Open(my.Dsn), &gorm.Config{})
 	if err != nil {
-		cmd.MainLogger.Sugar().Panicf("Error connecting MySQL DDBB: %s", my.Dsn)
+		config.MainLogger.Sugar().Panicf("Error connecting MySQL DDBB: %s", my.Dsn)
 	}
 	return db
 }
 
 func (pg GOBPostgreSQL) Connect() *gorm.DB {
-	cmd.MainLogger.Sugar().Debugf("---DEBUG---> DDBB Kind: %s DSN: %s", pg.Kind, pg.Dsn)
+	config.MainLogger.Sugar().Debugf("---DEBUG---> DDBB Kind: %s DSN: %s", pg.Kind, pg.Dsn)
 	db, err := gorm.Open(postgres.Open(pg.Dsn), &gorm.Config{})
 	if err != nil {
-		cmd.MainLogger.Sugar().Panicf("Error connecting PostgreSQL DDBB: %s", pg.Dsn)
+		config.MainLogger.Sugar().Panicf("Error connecting PostgreSQL DDBB: %s", pg.Dsn)
 	}
 	return db
 }
@@ -89,7 +89,7 @@ func Migrate(db *gorm.DB) {
 		&entities.MLModel{},
 		&entities.History{},
 	); err != nil {
-		cmd.MainLogger.Panic("Unable autoMigrateDB - " + err.Error())
+		config.MainLogger.Panic("Unable autoMigrateDB - " + err.Error())
 	}
 }
 
@@ -108,7 +108,7 @@ func Initialize(driver string) *gorm.DB {
 
 	db = GetDB(driver)
 	Migrate(db)
-	cmd.MainLogger.Sugar().Infof(`DDBB Initialized with "%s" driver`, driver)
+	config.MainLogger.Sugar().Infof(`DDBB Initialized with "%s" driver`, driver)
 
 	return db
 }
@@ -122,7 +122,7 @@ func GetDB(driver string) *gorm.DB {
 	case "sqlite":
 		sqlite_db := GOBSqlite{
 			Kind: driver,
-			Dsn:  string(cmd.CFG.TMPFolder + cmd.CFG.DB.DBName),
+			Dsn:  string(config.CFG.TMPFolder + config.CFG.DB.DBName),
 		}
 		db = Connector(sqlite_db)
 
@@ -130,17 +130,17 @@ func GetDB(driver string) *gorm.DB {
 	case "mysql":
 		mysql_db := GOBMysql{
 			Kind:   driver,
-			DBName: cmd.CFG.DB.DBName,
-			DBUser: cmd.CFG.DB.DBUser,
-			DBPass: cmd.CFG.DB.DBPass,
-			DBHost: cmd.CFG.DB.DBHost,
-			DBPort: cmd.CFG.DB.DBPort,
+			DBName: config.CFG.DB.DBName,
+			DBUser: config.CFG.DB.DBUser,
+			DBPass: config.CFG.DB.DBPass,
+			DBHost: config.CFG.DB.DBHost,
+			DBPort: config.CFG.DB.DBPort,
 			Dsn: fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-				cmd.CFG.DB.DBUser,
-				cmd.CFG.DB.DBPass,
-				cmd.CFG.DB.DBHost,
-				cmd.CFG.DB.DBPort,
-				cmd.CFG.DB.DBName,
+				config.CFG.DB.DBUser,
+				config.CFG.DB.DBPass,
+				config.CFG.DB.DBHost,
+				config.CFG.DB.DBPort,
+				config.CFG.DB.DBName,
 			),
 		}
 		db = Connector(mysql_db)
@@ -149,21 +149,21 @@ func GetDB(driver string) *gorm.DB {
 	case "postgres":
 		pgsql_db := GOBPostgreSQL{
 			Kind:       driver,
-			DBName:     cmd.CFG.DB.DBName,
-			DBUser:     cmd.CFG.DB.DBUser,
-			DBPass:     cmd.CFG.DB.DBPass,
-			DBHost:     cmd.CFG.DB.DBHost,
-			DBPort:     cmd.CFG.DB.DBPort,
-			DBSSL:      cmd.CFG.DB.DBSSL,
-			DBTimeZone: cmd.CFG.DB.DBTimeZone,
+			DBName:     config.CFG.DB.DBName,
+			DBUser:     config.CFG.DB.DBUser,
+			DBPass:     config.CFG.DB.DBPass,
+			DBHost:     config.CFG.DB.DBHost,
+			DBPort:     config.CFG.DB.DBPort,
+			DBSSL:      config.CFG.DB.DBSSL,
+			DBTimeZone: config.CFG.DB.DBTimeZone,
 			Dsn: fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
-				cmd.CFG.DB.DBHost,
-				cmd.CFG.DB.DBUser,
-				cmd.CFG.DB.DBPass,
-				cmd.CFG.DB.DBName,
-				cmd.CFG.DB.DBPort,
-				cmd.CFG.DB.DBSSL,
-				cmd.CFG.DB.DBTimeZone,
+				config.CFG.DB.DBHost,
+				config.CFG.DB.DBUser,
+				config.CFG.DB.DBPass,
+				config.CFG.DB.DBName,
+				config.CFG.DB.DBPort,
+				config.CFG.DB.DBSSL,
+				config.CFG.DB.DBTimeZone,
 			),
 		}
 		db = Connector(pgsql_db)
@@ -179,12 +179,12 @@ func Prepopulate(db *gorm.DB) {
 
 	fixturesFile, err := ioutil.ReadFile("fixtures/prepopulate_db.json")
 	if err != nil {
-		cmd.MainLogger.Sugar().Errorf("Error converting JSON file to []byte: %s", err)
+		config.MainLogger.Sugar().Errorf("Error converting JSON file to []byte: %s", err)
 	}
 
 	err = json.Unmarshal([]byte(fixturesFile), &fixtures)
 	if err != nil {
-		cmd.MainLogger.Sugar().Errorf("Error unmarshalling fixtures file: %s", err)
+		config.MainLogger.Sugar().Errorf("Error unmarshalling fixtures file: %s", err)
 	}
 
 	var org entities.Organization
@@ -193,7 +193,7 @@ func Prepopulate(db *gorm.DB) {
 	for i, v := range fixtures {
 		var q entities.Organization
 		// Insert Organization
-		cmd.MainLogger.Sugar().Infof("Creating Asset %d: %v", i, v)
+		config.MainLogger.Sugar().Infof("Creating Asset %d: %v", i, v)
 
 		// Check the OrgID from a query
 		db.Table("organizations").Where("Name = ?", v.OrgName).Find(&q)

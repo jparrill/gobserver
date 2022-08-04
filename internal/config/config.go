@@ -1,4 +1,4 @@
-package cmd
+package config
 
 import (
 	"fmt"
@@ -16,24 +16,35 @@ type TOMLCfgFile Config
 
 // Config struct holds the fields for global config
 type Config struct {
+	// TMPFolder is a temporary folder to hold all app assets
 	TMPFolder string `yaml:"tmpfolder" json:"tmpfolder"`
+	// AppPort where the application will bind in
+	AppPort string `yaml:"appport" json:"appport"`
 	// DB realted config
 	DB struct {
 		// DBName is a Filename in sqlite or DDBB Name in case of Mysql or Postgres
+		// Relevant in all cases
 		DBName string `yaml:"dbname" json:"dbname"`
 		// DBType: "sqlite"|"mysql"|"postgres"
+		// Relevant in all cases
 		DBType string `yaml:"dbtype" json:"dbtype"`
 		// DBUser "gobuser"
+		// Only relevant in MySQL and PostgreSQL
 		DBUser string `yaml:"dbuser" json:"dbuser"`
 		// DBPass "P4$$w0rD"
+		// Only relevant in MySQL and PostgreSQL
 		DBPass string `yaml:"dbpass" json:"dbpass"`
 		// DBHost "127.0.0.1"
+		// Only relevant in MySQL and PostgreSQL
 		DBHost string `yaml:"dbhost" json:"dbhost"`
 		// DBPort "5432"
+		// Only relevant in MySQL and PostgreSQL
 		DBPort string `yaml:"dbport" json:"dbport"`
 		// DBSSL "enable|disable"
+		// Only relevant in MySQL and PostgreSQL
 		DBSSL string `yaml:"dbssl" json:"dbssl"`
 		// DBTimeZone "UTC" "Asia/Shanghai"
+		// Only relevant in PostgreSQL
 		DBTimeZone string `yaml:"dbtimezone" json:"dbtimezone"`
 	} `yaml:"db" json:"db"`
 	// Log related config

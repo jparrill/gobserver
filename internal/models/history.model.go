@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 
-	"github.com/jparrill/gobserver/internal/cmd"
+	"github.com/jparrill/gobserver/internal/config"
 	"github.com/jparrill/gobserver/internal/database"
 	"github.com/jparrill/gobserver/internal/entities"
 )
@@ -14,7 +14,7 @@ func (historyModel HistoryModel) FindAll() ([]entities.History, ErrorModel) {
 	var hists []entities.History
 	var err ErrorModel
 
-	db := database.GetDB(cmd.CFG.DB.DBType)
+	db := database.GetDB(config.CFG.DB.DBType)
 	db.Find(&hists)
 	if len(hists) == 0 {
 		err = ErrorModel{
@@ -30,10 +30,10 @@ func (historyModel HistoryModel) FindMlModelHistory(MLModelID int, orgName strin
 	var org entities.Organization
 	var err ErrorModel
 
-	db := database.GetDB(cmd.CFG.DB.DBType)
+	db := database.GetDB(config.CFG.DB.DBType)
 	db.Table("organizations").Where("Name = ?", orgName).Find(&org)
 	if org.Name == "" {
-		cmd.MainLogger.Sugar().Errorf("Organization does not exists: %s\n", orgName)
+		config.MainLogger.Sugar().Errorf("Organization does not exists: %s\n", orgName)
 		err = ErrorModel{
 			Msg:  fmt.Sprintf("Organization does not exists: %s\n", orgName),
 			Code: 404,
