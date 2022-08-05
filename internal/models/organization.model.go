@@ -83,8 +83,9 @@ func (organizationModel OrganizationModel) CreateOrg(orgName string) (entities.O
 		Name: orgName,
 	}
 	result = db.Create(&org)
-	if result.Error != nil {
-		err = result.Error
+	if result.RowsAffected == 0 {
+		config.MainLogger.Sugar().Panicf("Organization %s cannot be created", orgName)
+		err = errors.New(fmt.Sprintf("Organization %s cannot be created", orgName))
 		return org, err
 	}
 

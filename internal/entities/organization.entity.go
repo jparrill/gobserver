@@ -9,7 +9,7 @@ import (
 
 // Organization struct contains the Name and the inherited gorm.Model fields
 type Organization struct {
-	ID   uint   `gorm:"primaryKey" json:"id"`
+	ID   uint   `gorm:"primaryKey" json:"orgId"`
 	Name string `gorm:"Unique" json:"orgName"`
 }
 
