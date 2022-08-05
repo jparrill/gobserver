@@ -11,9 +11,9 @@ import (
 type History struct {
 	gorm.Model
 	Organization   Organization
-	OrganizationID uint
+	OrganizationID uint `db:"organization_id" json:"organization_id"`
 	MLModel        MLModel
-	MLModelID      uint
+	MLModelID      uint `db:"mlmodel_id" json:"mlmodel_id"`
 	Success        bool `db:"success" json:"-"`
 }
 

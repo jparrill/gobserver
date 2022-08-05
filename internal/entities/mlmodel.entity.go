@@ -12,7 +12,7 @@ type MLModel struct {
 	gorm.Model
 	Name           string `db:"name" json:"name"`
 	Organization   Organization
-	OrganizationID uint
+	OrganizationID uint `db:"organization_id" json:"organization_id"`
 	Successes      uint `db:"successes" json:"successes"`
 	Fails          uint `db:"fails" json:"fails"`
 }

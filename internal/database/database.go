@@ -41,7 +41,6 @@ type GOBPostgreSQL struct {
 }
 
 type Object struct {
-	OrgId            int
 	OrgName          string
 	MlmodelName      string
 	MlmodelSuccesses int
@@ -190,10 +189,8 @@ func Prepopulate(db *gorm.DB) {
 	var org entities.Organization
 	var mlmodel entities.MLModel
 
-	for i, v := range fixtures {
+	for _, v := range fixtures {
 		var q entities.Organization
-		// Insert Organization
-		config.MainLogger.Sugar().Infof("Creating Asset %d: %v", i, v)
 
 		// Check the OrgID from a query
 		db.Table("organizations").Where("Name = ?", v.OrgName).Find(&q)
@@ -204,13 +201,16 @@ func Prepopulate(db *gorm.DB) {
 				Name: v.OrgName,
 			}
 			db.Create(&org)
+			config.MainLogger.Sugar().Infof("Creating Organization %s: %v", v.OrgName, v)
 		}
+
+		// Insert Organization
 
 		// If the org did not exists, the id is empty, so we recover again the resource
 		if q.ID == 0 {
 			db.Table("organizations").Where("Name = ?", v.OrgName).Find(&q)
 		}
-		// Insert ML Model into Into Organization
+		// Insert ML Model Into Organization
 		mlmodel = entities.MLModel{
 			Name:           v.MlmodelName,
 			OrganizationID: uint(q.ID),
@@ -218,6 +218,13 @@ func Prepopulate(db *gorm.DB) {
 			Fails:          uint(v.MlmodelFails),
 		}
 		db.Create(&mlmodel)
+		config.MainLogger.Sugar().Infof(
+			`Creating MlModel "%s" in "%d: %s" Organization: %v`,
+			v.MlmodelName,
+			q.ID,
+			q.Name,
+			v,
+		)
 	}
 
 }

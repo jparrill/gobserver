@@ -29,6 +29,15 @@ func NewRouter() *gin.Engine {
 			orgGroup.GET("/id/:id", org.Retrieve)
 			orgGroup.POST("/add", org.Create)
 		}
+		mlmodGroup := v1.Group("ml")
+		{
+			mlmod := new(controllers.MLModelController)
+			mlmodGroup.GET("/id/:orgId/:id", mlmod.RetrieveId)
+			mlmodGroup.GET("/nofails/:orgId", mlmod.RetrieveModInOrgNoFails)
+			mlmodGroup.GET("/nofails/all", mlmod.RetrieveModNoFails)
+			mlmodGroup.POST("/add", mlmod.Create)
+			mlmodGroup.POST("/addBulk", mlmod.CreateBulk)
+		}
 	}
 	return router
 

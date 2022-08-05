@@ -5,12 +5,14 @@ package entities
 import (
 	"encoding/json"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 // Organization struct contains the Name and the inherited gorm.Model fields
 type Organization struct {
-	ID   uint   `gorm:"primaryKey" json:"orgId"`
-	Name string `gorm:"Unique" json:"orgName"`
+	gorm.Model
+	Name string `gorm:"Unique" json:"name" db:"name"`
 }
 
 // TableName function returns the TableName
