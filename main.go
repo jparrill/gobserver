@@ -16,7 +16,7 @@ func main() {
 	ctx = context.Background()
 
 	// Recover the configuration
-	config.RecoverConfig()
+	config.RecoverConfig("config.yaml")
 
 	// Initialize the logger
 	config.InitLogger()

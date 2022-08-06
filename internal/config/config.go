@@ -1,10 +1,13 @@
 package config
 
 import (
-	"fmt"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 
+	"github.com/BurntSushi/toml"
 	"gopkg.in/yaml.v2"
 )
 
@@ -69,18 +72,17 @@ type Manage interface {
 
 // Recover function using the YAMLCfgFile as a driver, parses the YAML file loaded and
 // injects the content into a Config struct and exposes it in CFG global var
-func (cfg *YAMLCfgFile) Recover() error {
-	cf := "config.yaml"
-	f, err := os.Open(cf)
+func (cfg *YAMLCfgFile) Recover(configPath string) error {
+	f, err := os.Open(configPath)
 	if err != nil {
-		log.Fatalf("ERROR: Early error recovering the config file: %s", cf)
+		log.Fatalf("ERROR: Early error recovering the config file: %s", configPath)
 	}
 	defer f.Close()
 
 	decoder := yaml.NewDecoder(f)
 	err = decoder.Decode(cfg)
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("Error Decoding YAML Config file: %s", configPath)
 	}
 
 	return nil
@@ -88,55 +90,79 @@ func (cfg *YAMLCfgFile) Recover() error {
 
 // Recover function using the JSONCfgFile as a driver, parses the JSON file loaded and
 // injects the content into a Config struct and exposes it in CFG global var
-func (cfg *JSONCfgFile) Recover() error {
-	// To be implemented
-	cf := "config.json"
-	fmt.Println(cf)
+func (cfg *JSONCfgFile) Recover(configPath string) error {
+	f, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		log.Fatalf("ERROR: Early error recovering the config file: %s", configPath)
+	}
+
+	err = json.Unmarshal([]byte(f), cfg)
+	if err != nil {
+		log.Fatalf("Error Unmarshalling JSON Config file: %s", configPath)
+	}
+
 	return nil
 }
 
 // Recover function using the TOMLCfgFile as a driver, parses the TOML file loaded and
 // injects the content into a Config struct and exposes it in CFG global var
-func (cfg *TOMLCfgFile) Recover() error {
-	// To be implemented
-	cf := "config.toml"
-	fmt.Println(cf)
+func (cfg *TOMLCfgFile) Recover(configPath string) error {
+	f, err := os.Open(configPath)
+	if err != nil {
+		log.Fatalf("ERROR: Early error recovering the config file: %s", configPath)
+	}
+	defer f.Close()
+
+	decoder := toml.NewDecoder(f)
+	_, err = decoder.Decode(cfg)
+	if err != nil {
+		log.Fatalf("Error Decoding TOML Config file: %s", configPath)
+	}
+
 	return nil
 }
 
 // RecoverConfig function will recover Config File from the repo's root folder
 // it could be JSON, YAML or TOML.
-func RecoverConfig() {
+func RecoverConfig(configPath string) {
+
+	if _, err := os.Stat(configPath); err != nil {
+		log.Panicf(`Cannot open configFile in path: %s`, configPath)
+	}
 
 	var configFile Config
+	// Get Basepath
+	fileName := filepath.Base(configPath)
 
-	if _, err := os.Stat("config.json"); err == nil {
+	// Get Extension
+	ext := filepath.Ext(fileName)
+
+	switch ext {
+	case ".json":
 		cfg := JSONCfgFile(configFile)
-		err := cfg.Recover()
+		err := cfg.Recover(configPath)
 		if err != nil {
 			log.Panicln("Error decoding JSON")
 		}
 		configFile = Config(cfg)
 
-	} else if _, err := os.Stat("config.yaml"); err == nil {
+	case ".yaml", ".yml":
 		cfg := YAMLCfgFile(configFile)
-		err := cfg.Recover()
+		err := cfg.Recover(configPath)
 		if err != nil {
 			log.Panicln("Error decoding YAML")
 		}
 		configFile = Config(cfg)
 
-	} else if _, err := os.Stat("config.toml"); err == nil {
+	case ".toml":
 		cfg := TOMLCfgFile(configFile)
-		err := cfg.Recover()
+		err := cfg.Recover(configPath)
 		if err != nil {
 			log.Panicln("Error decoding TOML")
 		}
 		configFile = Config(cfg)
-
-	} else {
-		log.Panicln(`Config File does not exists, it should format: "yaml", "json" or "toml" with name "config"`)
-
+	default:
+		log.Fatalf(`Error recovering Config file. The file %s does not contain any of the supported extension: "json|toml|yaml|yml"`, configPath)
 	}
 
 	CFG = configFile

@@ -1,0 +1,16 @@
+{
+  "tmpfolder": "/tmp/gobserver/",
+  "appport": ":8081",
+  "db": {
+    "dbname": "gobserver",
+    "dbtype": "mysql",
+    "dbuser": "gobuser",
+    "dbpass": "gobpass",
+    "dbhost": "127.0.0.1",
+    "dbport": "3306"
+  },
+  "log": {
+    "logpath": "/tmp/gobserver/logs",
+    "loglevel": "debug"
+  }
+}
