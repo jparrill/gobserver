@@ -13,8 +13,6 @@ var MainLogger *zap.Logger
 
 //InitLogger function initializes the Logger engine using Zap as a base
 func InitLogger() {
-	// TODO: This Function receives the Context, we need to store the logger inside
-	// in order to use it among the whole app
 	_, err := os.Stat(CFG.TMPFolder)
 	if err != nil {
 		fmt.Println("BasePath for Log entries does not exists, creating...")
@@ -27,9 +25,19 @@ func InitLogger() {
 	loggerConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	fileEncoder := zapcore.NewJSONEncoder(loggerConfig)
 	consoleEncoder := zapcore.NewConsoleEncoder(loggerConfig)
-	logFile, err := os.OpenFile(CFG.Log.LogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Panicf("Error openning the %s logfile to store logs\n", CFG.Log.LogPath)
+
+	var logFile *os.File
+
+	if CFG.Log.LogTruncate {
+		logFile, err = os.OpenFile(CFG.Log.LogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+		if err != nil {
+			log.Panicf("Error openning the %s logfile to store logs\n", CFG.Log.LogPath)
+		}
+	} else {
+		logFile, err = os.OpenFile(CFG.Log.LogPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Panicf("Error openning the %s logfile to store logs\n", CFG.Log.LogPath)
+		}
 	}
 	writer := zapcore.AddSync(logFile)
 

@@ -12,3 +12,4 @@ dbport = "3306"
 [log]
 logpath = "/tmp/gobserver/logs"
 loglevel = "debug"
+logtruncate = true

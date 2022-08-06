@@ -8,3 +8,4 @@ db:
 log:
   logpath: "/tmp/gobserver/logs"
   loglevel: "debug"
+  logtruncate: true

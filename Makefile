@@ -14,11 +14,11 @@ install:
 	go install ./...
 
 tests:
-	go test -v ./...
+	go test -v -cover ./...
 
 coverage:
-	go test -cover -coverprofile
-	go tool cover -func -html c.out
+	go test -cover -coverprofile=c.out ./...
+	go tool cover -html=c.out
 
 doc:
 	godoc

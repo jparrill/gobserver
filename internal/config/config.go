@@ -20,46 +20,48 @@ type TOMLCfgFile Config
 // Config struct holds the fields for global config
 type Config struct {
 	// TMPFolder is a temporary folder to hold all app assets
-	TMPFolder string `yaml:"tmpfolder" json:"tmpfolder"`
+	TMPFolder string `yaml:"tmpfolder" json:"tmpfolder" toml:"tmpfolder"`
 	// AppPort where the application will bind in
-	AppPort string `yaml:"appport" json:"appport"`
+	AppPort string `yaml:"appport" json:"appport" toml:"appport"`
 	// DB realted config
 	DB struct {
 		// DBName is a Filename in sqlite or DDBB Name in case of Mysql or Postgres
 		// Relevant in all cases
-		DBName string `yaml:"dbname" json:"dbname"`
+		DBName string `yaml:"dbname" json:"dbname" toml:"dbname"`
 		// DBType: "sqlite"|"mysql"|"postgres"
 		// Relevant in all cases
-		DBType string `yaml:"dbtype" json:"dbtype"`
+		DBType string `yaml:"dbtype" json:"dbtype" toml:"dbtype"`
 		// DBUser "gobuser"
 		// Only relevant in MySQL and PostgreSQL
-		DBUser string `yaml:"dbuser" json:"dbuser"`
+		DBUser string `yaml:"dbuser" json:"dbuser" toml:"dbuser"`
 		// DBPass "P4$$w0rD"
 		// Only relevant in MySQL and PostgreSQL
-		DBPass string `yaml:"dbpass" json:"dbpass"`
+		DBPass string `yaml:"dbpass" json:"dbpass" toml:"dbpass"`
 		// DBHost "127.0.0.1"
 		// Only relevant in MySQL and PostgreSQL
-		DBHost string `yaml:"dbhost" json:"dbhost"`
+		DBHost string `yaml:"dbhost" json:"dbhost" toml:"dbhost"`
 		// DBPort "5432"
 		// Only relevant in MySQL and PostgreSQL
-		DBPort string `yaml:"dbport" json:"dbport"`
+		DBPort string `yaml:"dbport" json:"dbport" toml:"dbport"`
 		// DBSSL "enable|disable"
 		// Only relevant in MySQL and PostgreSQL
-		DBSSL string `yaml:"dbssl" json:"dbssl"`
+		DBSSL string `yaml:"dbssl" json:"dbssl" toml:"dbssl"`
 		// DBTimeZone "UTC" "Asia/Shanghai"
 		// Only relevant in PostgreSQL
-		DBTimeZone string `yaml:"dbtimezone" json:"dbtimezone"`
-	} `yaml:"db" json:"db"`
+		DBTimeZone string `yaml:"dbtimezone" json:"dbtimezone" toml:"dbtimezone"`
+	} `yaml:"db" json:"db" toml:"db"`
 	// Log related config
 	Log struct {
 		// Concanetated with TMPFolder
-		LogPath string `yaml:"logpath" json:"logpath"`
+		LogPath string `yaml:"logpath" json:"logpath" toml:"logpath"`
 		// Loglevel option can be these ones: debug|info|warn|error|panic|fatal.
 		// For more info check gobserver/internal/cmd/root.go on the switch statement.
 		// The log level are equivalent to zapcore.LevelEnabler type.
 		// For more into check "go doc zapcore.LevelEnabler" or "go doc zapcore.DebugLevel"
-		LogLevel string `yaml:"loglevel" json:"loglevel"`
-	} `yaml:"log" json:"log"`
+		LogLevel string `yaml:"loglevel" json:"loglevel" toml:"loglevel"`
+		// LogTruncate put the Log file to 0 when it's openning it (flag os.O_TRUNC)
+		LogTruncate bool `yaml:"logtruncate" json:"logtruncate" toml:"logtruncate"`
+	} `yaml:"log" json:"log" toml:"log"`
 }
 
 // Manage interface gives the methods to cover different source files

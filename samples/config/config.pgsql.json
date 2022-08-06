@@ -13,6 +13,7 @@
   },
   "log": {
     "logpath": "/tmp/gobserver/logs",
-    "loglevel": "debug"
+    "loglevel": "debug",
+    "logtruncate": true
   }
 }
