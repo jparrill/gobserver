@@ -14,7 +14,7 @@ type History struct {
 	OrganizationID uint `db:"organization_id" json:"organization_id"`
 	MLModel        MLModel
 	MLModelID      uint `db:"mlmodel_id" json:"mlmodel_id"`
-	Success        bool `db:"success" json:"-"`
+	Success        bool `db:"success" json:"success"`
 }
 
 // TableName function returns the TableName
