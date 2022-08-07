@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/jparrill/gobserver/internal/config"
@@ -10,44 +11,35 @@ import (
 
 type HistoryModel struct{}
 
-func (historyModel HistoryModel) FindAll() ([]entities.History, ErrorModel) {
+func (historyModel HistoryModel) FindAll() ([]entities.History, error) {
 	var hists []entities.History
-	var err ErrorModel
+	var err error
 
 	db := database.GetDB(config.CFG.DB.DBType)
-	db.Find(&hists)
-	if len(hists) == 0 {
-		err = ErrorModel{
-			Msg:  "History entries not Found in FindAll() function",
-			Code: 404,
-		}
+	result := db.Find(&hists)
+	if result.RowsAffected == 0 {
+		err = errors.New("History entries not Found in FindAll() function")
 	}
 	return hists, err
 }
 
-func (historyModel HistoryModel) FindMlModelHistory(MLModelID int, orgName string) ([]entities.History, ErrorModel) {
+func (historyModel HistoryModel) FindMlModelHistory(MLModelID int, orgName string) ([]entities.History, error) {
 	var hists []entities.History
 	var org entities.Organization
-	var err ErrorModel
+	var err error
 
 	db := database.GetDB(config.CFG.DB.DBType)
 	db.Table("organizations").Where("Name = ?", orgName).Find(&org)
 	if org.Name == "" {
 		config.MainLogger.Sugar().Panicf("Organization does not exists: %s\n", orgName)
-		err = ErrorModel{
-			Msg:  fmt.Sprintf("Organization does not exists: %s\n", orgName),
-			Code: 404,
-		}
-		return nil, err
+		err = errors.New(fmt.Sprintf("Organization does not exists: %s\n", orgName))
 
+		return nil, err
 	}
 
 	result := db.Table("history").Where("OrganizationID = ? AND MLModelID = ?", org.ID, MLModelID)
-	if result.Error != nil {
-		err = ErrorModel{
-			Msg:  fmt.Sprintf("History over MLModel %d in Organization %s not found: %s\n", MLModelID, orgName, result.Error),
-			Code: 404,
-		}
+	if result.RowsAffected == 0 {
+		err = errors.New(fmt.Sprintf("History over MLModel %d in Organization %s not found: %s\n", MLModelID, orgName, result.Error))
 		return hists, err
 	}
 
