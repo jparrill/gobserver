@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jparrill/gobserver/config"
+	"github.com/jparrill/gobserver/internal/config"
 	"github.com/stretchr/testify/assert"
 )
 

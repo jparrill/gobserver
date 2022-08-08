@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/jparrill/gobserver/entities"
+	"github.com/jparrill/gobserver/internal/entities"
 	"github.com/stretchr/testify/assert"
 )
 

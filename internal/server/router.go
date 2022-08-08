@@ -5,8 +5,8 @@ import (
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
-	"github.com/jparrill/gobserver/config"
-	"github.com/jparrill/gobserver/controllers"
+	"github.com/jparrill/gobserver/internal/config"
+	"github.com/jparrill/gobserver/internal/controllers"
 )
 
 func NewRouter() *gin.Engine {

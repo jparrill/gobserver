@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/jparrill/gobserver/config"
-	"github.com/jparrill/gobserver/entities"
+	"github.com/jparrill/gobserver/internal/config"
+	"github.com/jparrill/gobserver/internal/entities"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"

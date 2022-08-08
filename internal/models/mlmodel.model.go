@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jparrill/gobserver/config"
-	"github.com/jparrill/gobserver/database"
-	"github.com/jparrill/gobserver/entities"
+	"github.com/jparrill/gobserver/internal/config"
+	"github.com/jparrill/gobserver/internal/database"
+	"github.com/jparrill/gobserver/internal/entities"
 )
 
 type MLModModel struct{}

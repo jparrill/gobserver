@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jparrill/gobserver/config"
-	"github.com/jparrill/gobserver/database"
+	"github.com/jparrill/gobserver/internal/config"
+	"github.com/jparrill/gobserver/internal/database"
 )
 
 func setUp() {

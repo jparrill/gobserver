@@ -8,9 +8,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jparrill/gobserver/config"
-	"github.com/jparrill/gobserver/entities"
-	"github.com/jparrill/gobserver/models"
+	"github.com/jparrill/gobserver/internal/config"
+	"github.com/jparrill/gobserver/internal/entities"
+	"github.com/jparrill/gobserver/internal/models"
 )
 
 type OrganizationController struct{}

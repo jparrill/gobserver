@@ -4,7 +4,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/jparrill/gobserver/models"
+	"github.com/jparrill/gobserver/internal/models"
 	"github.com/stretchr/testify/assert"
 )
 

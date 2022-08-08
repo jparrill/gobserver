@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 
-	"github.com/jparrill/gobserver/gobserver/config"
-	"github.com/jparrill/gobserver/gobserver/database"
-	"github.com/jparrill/gobserver/gobserver/server"
+	"github.com/jparrill/gobserver/internal/config"
+	"github.com/jparrill/gobserver/internal/database"
+	"github.com/jparrill/gobserver/internal/server"
 )
 
 var ctx context.Context
