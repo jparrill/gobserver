@@ -1,7 +1,6 @@
 package models_test
 
 import (
-	"fmt"
 	"log"
 	"testing"
 
@@ -124,20 +123,6 @@ func TestMLModModel(t *testing.T) {
 		if err != nil {
 			log.Panicf("Error recovering data from DDBB: %v", err)
 		}
-		assert.True(t, mlmms.OrganizationID == 1)
-		assert.True(t, mlmms.Name == "Decision tree")
-		assert.True(t, mlmms.Successes == 0)
-		assert.True(t, mlmms.Fails == 0)
-	})
-
-	t.Run("TestMLMFindByIdInOrg", func(t *testing.T) {
-		var mlmm models.MLModModel
-
-		mlmms, err := mlmm.FindByIdInOrg(1, 1)
-		if err != nil {
-			log.Panicf("Error recovering data from DDBB: %v", err)
-		}
-		fmt.Println(mlmms)
 		assert.True(t, mlmms.OrganizationID == 1)
 		assert.True(t, mlmms.Name == "Decision tree")
 		assert.True(t, mlmms.Successes == 0)
