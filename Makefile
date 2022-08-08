@@ -24,7 +24,7 @@ doc:
 	godoc
 
 run:
-	go run gobserver/main.go
+	go run internal/cmd/main.go
 
 all: clean install tests run
 
