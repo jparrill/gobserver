@@ -132,14 +132,16 @@ func (mlModModel MLModModel) FindById(mlmodID int) (entities.MLModel, error) {
 //FindById function looks for MLModels in Organization using the ID as an argument
 func (mlModModel MLModModel) FindByIdInOrg(mlmodID int, orgID int) (entities.MLModel, error) {
 	var mlmod entities.MLModel
-	//var mlmods []entities.MLModel
+	var mlmods []entities.MLModel
 	var err error
 
 	db := database.GetDB(config.CFG.DB.DBType)
-	result := db.Table("mlmodels").Where("organization_id = ? AND ID == ?", orgID, mlmod.ID).Find(&mlmod)
+	result := db.Table("mlmodels").Where("organization_id = ?", orgID).Find(&mlmods)
 	if result.RowsAffected == 0 {
 		err = errors.New(fmt.Sprintf("MLModels not Found with ID %d in Organization %d ", mlmodID, orgID))
 	}
+	// This is ugly... but still dunno how to restart the ID when a multi condition query is done
+	mlmod = mlmods[mlmodID]
 
 	return mlmod, err
 }
