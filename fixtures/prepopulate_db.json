@@ -46,5 +46,11 @@
      "mlmodelName": "Linear regression",
      "mlmodelSuccesses": 0,
      "mlmodelFails": 0
+    },
+    {
+     "orgName": "client2",
+     "mlmodelName": "Convex Haul",
+     "mlmodelSuccesses": 0,
+     "mlmodelFails": 9
     }
 ]
